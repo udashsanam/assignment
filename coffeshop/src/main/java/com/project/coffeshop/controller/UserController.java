@@ -1,5 +1,6 @@
 package com.project.coffeshop.controller;
 
+import com.project.coffeshop.pojo.request.UserPojo;
 import com.project.coffeshop.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

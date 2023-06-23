@@ -18,7 +18,7 @@ public class UserEntity extends BaseEntity{
 
     private String email;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "cafe_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "cafe_id", nullable = true)
     private CafeEntity cafe;
 }

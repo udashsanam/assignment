@@ -11,4 +11,10 @@ public class UserDto {
     private String cafeName;
 
     private String email;
+
+    public UserDto(String username, String email, String cafeName) {
+        this.username = username;
+        this.cafeName = cafeName;
+        this.email = email;
+    }
 }

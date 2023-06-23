@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class CafeServiceImpl extends BaseServiceImpl implements CafeService{
+public class CafeServiceImpl extends BaseServiceImpl<CafeEntity, Long> implements CafeService{
 
     @Autowired
     private CafeRepository cafeRepository;

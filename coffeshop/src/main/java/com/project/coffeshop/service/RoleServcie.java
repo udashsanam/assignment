@@ -1,4 +1,6 @@
 package com.project.coffeshop.service;
 
-public interface RoleServcie {
+import com.project.coffeshop.entity.RoleEntity;
+
+public interface RoleServcie extends BaseService<RoleEntity, Long>  {
 }

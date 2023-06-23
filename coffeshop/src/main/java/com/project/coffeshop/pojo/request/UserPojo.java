@@ -14,4 +14,6 @@ public class UserPojo {
     private Long cafeId;
 
     private String name;
+
+    private Long roleId;
 }

@@ -1,4 +1,6 @@
 package com.project.coffeshop.service;
 
-public interface CoffeeService {
+import com.project.coffeshop.entity.CoffeeEntity;
+
+public interface CoffeeService extends BaseService<CoffeeEntity, Long> {
 }

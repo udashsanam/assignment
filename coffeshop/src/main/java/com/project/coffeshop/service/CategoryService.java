@@ -1,4 +1,6 @@
 package com.project.coffeshop.service;
 
-public interface CategoryService {
+import com.project.coffeshop.entity.CategoryEntity;
+
+public interface CategoryService extends BaseService<CategoryEntity, Long> {
 }
