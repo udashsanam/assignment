@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderEntity extends BaseEntity{
 
+    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 

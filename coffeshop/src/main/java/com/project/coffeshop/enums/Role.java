@@ -4,7 +4,9 @@ public enum Role {
 
     CAFE_OWNER,
 
-    CUSTOMER
+    CUSTOMER,
+
+    SUPER_ADMIN
 
 
 }
