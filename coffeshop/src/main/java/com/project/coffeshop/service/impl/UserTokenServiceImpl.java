@@ -20,19 +20,13 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.project.coffeshop.util.Constants.*;
+
 @Service
 @Transactional
 public class UserTokenServiceImpl extends BaseServiceImpl<UserTokenEntity, Long> implements UserTokenService {
 
-    private static int ACCESS_TOKEN_EXPIRE_TIME = 15 * 60 * 1000;
 
-    private static int SESSION_EXPIRY_TIME = 20 * 60 * 1000;
-
-    private static String SECRET_KEY = "C@Ff66SH0P";
-
-    private static String USER_ID_CLAIM = "userId";
-
-    private static String USER_ROLES_CLAIM = "userRoles";
 
     private final UserTokenRepository userTokenRepository;
 

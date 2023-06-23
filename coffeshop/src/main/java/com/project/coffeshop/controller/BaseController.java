@@ -7,8 +7,16 @@ import jakarta.servlet.http.HttpServletRequest;
 public abstract class BaseController {
 
 
+    public static String AUTHORIZATION_HEADER = "authorization";
+
+    public static String BEARER_TOKEN = "Bearer";
+
+
     public String getAccessToken(HttpServletRequest request){
-        return null;
+
+        String accessToken = request.getHeader(AUTHORIZATION_HEADER);
+        if(!accessToken.startsWith(BEARER_TOKEN))  throw new RuntimeException("Token malformed");
+        return accessToken.substring(7);
     }
 
     public GlobalApiResponse successResponse(String message, Object data){
@@ -18,4 +26,8 @@ public abstract class BaseController {
                 .message(message)
                 .build();
     }
+
+
+
+
 }
