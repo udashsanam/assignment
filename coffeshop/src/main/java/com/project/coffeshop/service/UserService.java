@@ -13,4 +13,6 @@ public interface UserService extends BaseService<UserEntity, Long> {
     TokenResponse signIn(LoginPojo loginPojo);
 
     boolean signOut(String username, String token);
+
+    TokenResponse getToken(String refreshToken);
 }

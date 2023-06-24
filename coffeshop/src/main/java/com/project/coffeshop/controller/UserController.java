@@ -33,4 +33,9 @@ public class UserController extends BaseController{
         return  ResponseEntity.ok(successResponse("successfully logout", userService.signOut(username, token)));
     }
 
+    @GetMapping("refresh")
+    public ResponseEntity<?> getToken(@RequestParam("refreshToken") String refreshToken){
+        return ResponseEntity.ok(successResponse("Successfully refresh", userService.getToken(refreshToken)));
+    }
+
 }

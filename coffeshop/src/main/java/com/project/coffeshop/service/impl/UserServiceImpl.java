@@ -117,5 +117,13 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
         return true;
     }
 
+    @Override
+    public TokenResponse getToken(String refreshToken) {
+        UserRefreshTokenEntity userRefreshTokenEntity = userRefreshTokenRepo.findByRefreshToken(refreshToken);
+        if(userRefreshTokenEntity.getExpiryTime().before(new Timestamp(System.currentTimeMillis()))) throw new RuntimeException("refresh token expired");
+        UserEntity user = userRefreshTokenEntity.getUserToken().getUser();
+        return userTokenService.getToken(user);
+    }
+
 
 }
