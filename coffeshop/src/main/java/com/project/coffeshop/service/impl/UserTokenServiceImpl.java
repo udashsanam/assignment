@@ -5,6 +5,7 @@ import com.project.coffeshop.entity.UserRefreshTokenEntity;
 import com.project.coffeshop.entity.UserRoleEntity;
 import com.project.coffeshop.entity.UserTokenEntity;
 import com.project.coffeshop.pojo.response.TokenResponse;
+import com.project.coffeshop.repo.UserRepository;
 import com.project.coffeshop.repo.UserRoleRepository;
 import com.project.coffeshop.repo.UserTokenRepository;
 import com.project.coffeshop.service.UserTokenService;
@@ -24,18 +25,31 @@ import static com.project.coffeshop.util.Constants.*;
 
 @Service
 @Transactional
-public class UserTokenServiceImpl extends BaseServiceImpl<UserTokenEntity, Long> implements UserTokenService {
+public class UserTokenServiceImpl extends BaseServiceImpl<UserTokenEntity, UUID> implements UserTokenService {
 
 
 
     private final UserTokenRepository userTokenRepository;
 
+
     @Autowired
     private UserRoleRepository userRoleRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
     public UserTokenServiceImpl(UserTokenRepository userTokenRepository) {
         super(userTokenRepository);
         this.userTokenRepository = userTokenRepository;
+    }
+
+    @Override
+    public UserEntity getUser(String token) {
+        String onlineUser = this.getClaims(token).getSubject();
+        UserEntity user = userRepository.findByUsername(onlineUser);
+        if(user == null) throw new RuntimeException("user not found");
+        return user;
     }
 
     @Override

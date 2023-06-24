@@ -10,4 +10,6 @@ public interface UserTokenService extends BaseService<UserTokenEntity, Long> {
     TokenResponse getToken(UserEntity user);
 
     Claims getClaims(String token);
+
+    UserEntity getUser(String token);
 }

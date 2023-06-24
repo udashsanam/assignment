@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_token")
@@ -16,7 +18,11 @@ import java.sql.Timestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserTokenEntity extends BaseEntity{
+public class UserTokenEntity implements Serializable {
+
+    @Id
+    @Column(name = "id")
+    private UUID id = UUID.randomUUID();
 
     @Column(name = "user_token", nullable = false)
     private String accessToken;

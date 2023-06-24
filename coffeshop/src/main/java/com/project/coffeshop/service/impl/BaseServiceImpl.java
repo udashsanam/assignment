@@ -4,7 +4,7 @@ import com.project.coffeshop.entity.BaseEntity;
 import com.project.coffeshop.service.BaseService;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public  class BaseServiceImpl<T extends BaseEntity, ID> implements BaseService<T, ID> {
+public  class BaseServiceImpl<T , ID> implements BaseService<T, ID> {
 
     private final JpaRepository<T, ID>  repository;
     public BaseServiceImpl(JpaRepository<T, ID> repository) {

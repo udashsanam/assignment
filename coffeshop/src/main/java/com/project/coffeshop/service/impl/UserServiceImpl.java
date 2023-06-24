@@ -1,17 +1,13 @@
 package com.project.coffeshop.service.impl;
 
-import com.project.coffeshop.entity.CafeEntity;
-import com.project.coffeshop.entity.RoleEntity;
-import com.project.coffeshop.entity.UserEntity;
+import com.project.coffeshop.entity.*;
 import com.project.coffeshop.enums.Role;
 import com.project.coffeshop.exception.UnAuthorizeException;
 import com.project.coffeshop.pojo.request.LoginPojo;
 import com.project.coffeshop.pojo.request.UserPojo;
 import com.project.coffeshop.pojo.response.TokenResponse;
 import com.project.coffeshop.pojo.response.UserDto;
-import com.project.coffeshop.repo.CafeRepository;
-import com.project.coffeshop.repo.RoleRepository;
-import com.project.coffeshop.repo.UserRepository;
+import com.project.coffeshop.repo.*;
 import com.project.coffeshop.service.UserService;
 import com.project.coffeshop.service.UserTokenService;
 import com.project.coffeshop.util.Constants;
@@ -20,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Timestamp;
 
 @Service
 @Transactional
@@ -35,6 +33,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
     private BCryptPasswordEncoder passwordEncoder;
 
     private final UserTokenService userTokenService;
+    @Autowired
+    private UserTokenRepository userTokenRepository;
+
+    @Autowired
+    private UserRefreshTokenRepo userRefreshTokenRepo;
 
 
     public UserServiceImpl(UserRepository userRepository, CafeRepository cafeRepository, RoleRepository roleRepository, UserTokenService userTokenService) {
@@ -83,6 +86,20 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
         Claims  claims = userTokenService.getClaims(token);
         if(!username.equals(claims.getSubject())) throw new UnAuthorizeException("You are unauthorized to logout this user");
         // todo expired all the sessioin
+        UserTokenEntity userTokenEntity =userTokenRepository.findByAccessToken(token);
+        UserRefreshTokenEntity userRefreshTokenEntity = userRefreshTokenRepo.findByUserTokenId(userTokenEntity.getId());
+
+        try {
+            userTokenEntity.setExpiryTime(new Timestamp(System.currentTimeMillis()));
+            userRefreshTokenEntity.setExpiryTime(new Timestamp(System.currentTimeMillis()));
+
+            userTokenRepository.save(userTokenEntity);
+            userRefreshTokenRepo.save(userRefreshTokenEntity);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("Error login out");
+        }
+
         return true;
     }
 

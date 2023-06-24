@@ -2,5 +2,7 @@ package com.project.coffeshop.service;
 
 import com.project.coffeshop.entity.UserRefreshTokenEntity;
 
-public interface UserRefreshTokenService extends BaseService<UserRefreshTokenEntity, Long>  {
+import java.util.UUID;
+
+public interface UserRefreshTokenService extends BaseService<UserRefreshTokenEntity, UUID>  {
 }

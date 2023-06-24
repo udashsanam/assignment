@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_refresh_token")
@@ -14,7 +16,11 @@ import java.sql.Timestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRefreshTokenEntity extends BaseEntity{
+public class UserRefreshTokenEntity implements Serializable {
+
+    @Id
+    @Column(name = "id")
+    private UUID id = UUID.randomUUID();
 
     @Column(name = "refresh_token", nullable = false)
     private String refreshToken;
