@@ -26,6 +26,10 @@ public class OrderDto {
 
     private HashMap<Long, Integer> coffeeQuantity;
 
+    private String customerName;
+
+    private Long userId;
+
     public OrderDto(Long orderId, OrderStatus orderStatus, Double orderTotal){
         this.orderId = orderId;
         this.orderStatus = orderStatus;

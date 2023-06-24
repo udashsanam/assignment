@@ -12,4 +12,6 @@ public interface OrderService extends BaseService<OrderEntity, Long> {
     OrderDto create(OrderPojo orderPojo, String token);
 
     List<OrderDto> getAllOrders(String token);
+
+    List<OrderDto> getAllOrderCafe(Long restaurantId, String token);
 }

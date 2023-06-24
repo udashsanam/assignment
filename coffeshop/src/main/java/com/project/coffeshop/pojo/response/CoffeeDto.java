@@ -8,17 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
-public class CafeDto {
+@AllArgsConstructor
+public class CoffeeDto {
 
     private Long id;
 
     private String name;
 
-    private String address;
-
-    public CafeDto(Long id, String name, String address) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-    }
+    private String category;
 }

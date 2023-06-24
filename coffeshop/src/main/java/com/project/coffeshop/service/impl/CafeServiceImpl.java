@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 public class CafeServiceImpl extends BaseServiceImpl<CafeEntity, Long> implements CafeService{
@@ -41,5 +44,14 @@ public class CafeServiceImpl extends BaseServiceImpl<CafeEntity, Long> implement
             throw new RuntimeException("Error saving cafe");
         }
         return new CafeDto(cafe.getId(), cafe.getName(), cafe.getAddress());
+    }
+
+    @Override
+    public List<CafeDto> findAllCafe() {
+        List<CafeEntity> cafeEntities = cafeRepository.findAll();
+        List<CafeDto> cafeDtos = cafeEntities.parallelStream()
+                .map(cafeEntity -> new CafeDto(cafeEntity.getId(), cafeEntity.getName(), cafeEntity.getAddress()))
+                .collect(Collectors.toList());
+        return  cafeDtos;
     }
 }

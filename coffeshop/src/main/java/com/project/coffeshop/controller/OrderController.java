@@ -18,7 +18,7 @@ public class OrderController extends BaseController{
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody OrderPojo orderPojo, HttpServletRequest request){
-        String token = getAccessToken(request)
+        String token = getAccessToken(request);
         return ResponseEntity.ok(successResponse("Successfully place order", orderService.create(orderPojo, token)));
     }
 
@@ -26,5 +26,11 @@ public class OrderController extends BaseController{
     public ResponseEntity<?> getAllOrders(HttpServletRequest request){
         String token = getAccessToken(request);
         return ResponseEntity.ok(successResponse("Successfully fetched", orderService.getAllOrders(token)));
+    }
+
+    @GetMapping("get-all-orders-coffee-shop")
+    public ResponseEntity<?> getAllOrdersRestaurant(@RequestParam("restaurantId") Long restaurantId, HttpServletRequest request){
+        String token = getAccessToken(request);
+        return ResponseEntity.ok(successResponse("Successfully fetched", orderService.getAllOrderCafe(restaurantId, token)));
     }
 }

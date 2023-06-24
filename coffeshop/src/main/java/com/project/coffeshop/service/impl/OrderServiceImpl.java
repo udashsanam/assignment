@@ -2,12 +2,11 @@ package com.project.coffeshop.service.impl;
 
 import com.project.coffeshop.entity.*;
 import com.project.coffeshop.enums.OrderStatus;
+import com.project.coffeshop.enums.Role;
+import com.project.coffeshop.exception.UnAuthorizeException;
 import com.project.coffeshop.pojo.request.OrderPojo;
 import com.project.coffeshop.pojo.response.OrderDto;
-import com.project.coffeshop.repo.CafeRepository;
-import com.project.coffeshop.repo.CoffeeRepository;
-import com.project.coffeshop.repo.OrderRepository;
-import com.project.coffeshop.repo.UserRepository;
+import com.project.coffeshop.repo.*;
 import com.project.coffeshop.service.OrderService;
 import com.project.coffeshop.service.UserTokenService;
 import com.project.coffeshop.util.Constants;
@@ -37,6 +36,11 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderEntity, Long> impleme
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+
 
 
 
@@ -89,7 +93,23 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderEntity, Long> impleme
     public List<OrderDto> getAllOrders(String token) {
         UserEntity user = userTokenService.getUser(token);
         List<OrderEntity> orderEntities = orderRepository.findAllByUserId(user.getId());
-        List<OrderDto> orderDtos = orderEntities.stream().map(orderEntity -> {
+        List<OrderDto> orderDtos = getOrderDtos(orderEntities, false);
+
+        return orderDtos;
+    }
+
+    @Override
+    public List<OrderDto> getAllOrderCafe(Long restaurantId, String token) {
+        UserEntity userEntity = userTokenService.getUser(token);
+        List<String> roles = userRoleRepository.findAllRolesByUserId(userEntity.getId());
+        if(!roles.contains(Role.CAFE_OWNER.toString())) throw new UnAuthorizeException("you are unauthorized to view orders");
+        List<OrderEntity> orderEntities = orderRepository.findAllByCafeId(userEntity.getCafe().getId());
+
+        return getOrderDtos(orderEntities, true);
+    }
+
+    private List<OrderDto> getOrderDtos(List<OrderEntity> orderEntities, boolean isOwner){
+        List<OrderDto> orderDtos = orderEntities.parallelStream().map(orderEntity -> {
 
             OrderDto orderDto = new OrderDto();
             orderDto.setOrderTotal(orderEntity.getOrderTotal());
@@ -102,6 +122,10 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderEntity, Long> impleme
             });
             orderDto.setCoffeeName(coffeeNameMap);
             orderDto.setCoffeeQuantity(coffeeQuantity);
+            if(isOwner){
+                orderDto.setCustomerName(orderEntity.getUser().getName());
+                orderDto.setUserId(orderEntity.getUser().getId());
+            }
             return orderDto;
         }).collect(Collectors.toList());
 
