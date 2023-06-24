@@ -5,6 +5,7 @@ import com.project.coffeshop.entity.UserRefreshTokenEntity;
 import com.project.coffeshop.entity.UserRoleEntity;
 import com.project.coffeshop.entity.UserTokenEntity;
 import com.project.coffeshop.pojo.response.TokenResponse;
+import com.project.coffeshop.repo.UserRefreshTokenRepo;
 import com.project.coffeshop.repo.UserRepository;
 import com.project.coffeshop.repo.UserRoleRepository;
 import com.project.coffeshop.repo.UserTokenRepository;
@@ -37,11 +38,14 @@ public class UserTokenServiceImpl extends BaseServiceImpl<UserTokenEntity, UUID>
 
     @Autowired
     private UserRepository userRepository;
+    private final UserRefreshTokenRepo userRefreshTokenRepo;
 
 
-    public UserTokenServiceImpl(UserTokenRepository userTokenRepository) {
+    public UserTokenServiceImpl(UserTokenRepository userTokenRepository,
+                                UserRefreshTokenRepo userRefreshTokenRepo) {
         super(userTokenRepository);
         this.userTokenRepository = userTokenRepository;
+        this.userRefreshTokenRepo = userRefreshTokenRepo;
     }
 
     @Override
@@ -60,6 +64,7 @@ public class UserTokenServiceImpl extends BaseServiceImpl<UserTokenEntity, UUID>
                 .accessToken(accessToken)
                 .expiryTime(new Timestamp(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
                 .user(user)
+                .id(UUID.randomUUID())
                 .build();
 
         try {
@@ -73,7 +78,9 @@ public class UserTokenServiceImpl extends BaseServiceImpl<UserTokenEntity, UUID>
                 .userToken(userToken)
                 .refreshToken(refreshToken)
                 .expiryTime(new Timestamp(System.currentTimeMillis() + SESSION_EXPIRY_TIME))
+                .id(UUID.randomUUID())
                 .build();
+        userRefreshTokenRepo.save(userRefreshTokenEntity);
 
 
         return new TokenResponse(accessToken, refreshToken);
