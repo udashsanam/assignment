@@ -1,13 +1,19 @@
 package com.project.coffeshop.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "coffee")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CoffeeEntity extends BaseEntity {
 
     @Column(name = "name")

@@ -1,6 +1,8 @@
 package com.project.coffeshop.service.impl;
 
 import com.project.coffeshop.entity.CategoryEntity;
+import com.project.coffeshop.pojo.request.CategoryPojo;
+import com.project.coffeshop.pojo.response.CategoryDto;
 import com.project.coffeshop.repo.CategoryRepository;
 import com.project.coffeshop.service.CategoryService;
 import org.springframework.stereotype.Service;
@@ -17,5 +19,10 @@ public class CategoryServiceImpl extends BaseServiceImpl<CategoryEntity, Long> i
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
         super(categoryRepository);
         this.categoryRepository = categoryRepository;
+    }
+
+    @Override
+    public CategoryDto saveCategory(CategoryPojo categoryPojo) {
+        return null;
     }
 }
