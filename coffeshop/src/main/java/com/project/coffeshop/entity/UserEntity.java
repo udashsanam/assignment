@@ -1,13 +1,11 @@
 package com.project.coffeshop.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "user")
 public class UserEntity extends BaseEntity{
 
     private String name;

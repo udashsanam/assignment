@@ -9,7 +9,6 @@ public class CafePojo {
 
     private String address;
 
-    private Long userId;
 
     private String username;
 }

@@ -27,7 +27,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
 
     private final CafeRepository cafeRepository;
 
-    private final RoleRepository roleRepository;
+    @Autowired
+    private  RoleRepository roleRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -38,6 +39,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
 
     @Autowired
     private UserRefreshTokenRepo userRefreshTokenRepo;
+
+    @Autowired
+    private UserRoleRepository userRoleRepository;
 
 
     public UserServiceImpl(UserRepository userRepository, CafeRepository cafeRepository, RoleRepository roleRepository, UserTokenService userTokenService) {
@@ -50,7 +54,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
 
     @Override
     public UserDto signUp(UserPojo userPojo) {
-        RoleEntity role = roleRepository.findById(userPojo.getRoleId()).orElseThrow(()-> new RuntimeException("Role not found"));
+        Role roleEnum = Role.valueOf(userPojo.getRole());
+        RoleEntity role = roleRepository.findByName(roleEnum);
+        if(role ==null) throw new RuntimeException("role not found");
         UserEntity user = new UserEntity();
         if(Role.CAFE_OWNER.equals(role.getName())) {
             CafeEntity cafe = cafeRepository.findById(userPojo.getCafeId()).orElseThrow(()-> new RuntimeException("Cafe not found"));
@@ -62,12 +68,18 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
         user.setPassword(passwordEncoder.encode(userPojo.getPassword()));
 
         try {
+
             user = save(user);
+            UserRoleEntity userRoleEntity = new UserRoleEntity();
+            userRoleEntity.setRole(role);
+            userRoleEntity.setUserEntity(user);
+            userRoleRepository.save(userRoleEntity);
+
         } catch (Exception ex){
             throw new RuntimeException("Error saving the user");
         }
 
-        return new UserDto(user.getUsername(), user.getEmail(), user.getCafe().getName());
+        return new UserDto(user.getUsername(), user.getEmail());
     }
 
     @Override

@@ -17,4 +17,9 @@ public class UserDto {
         this.cafeName = cafeName;
         this.email = email;
     }
+
+    public UserDto(String username, String email) {
+        this.username =username;
+        this.email =email;
+    }
 }

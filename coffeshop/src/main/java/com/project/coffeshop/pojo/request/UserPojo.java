@@ -15,5 +15,5 @@ public class UserPojo {
 
     private String name;
 
-    private Long roleId;
+    private String role;
 }
