@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,9 +23,7 @@ public class OrderDto {
 
     private Double orderTotal;
 
-    private HashMap<Long, String> coffeeName;
-
-    private HashMap<Long, Integer> coffeeQuantity;
+    private List<OrderDetailDto> orderDetailDtoList;
 
     private String customerName;
 

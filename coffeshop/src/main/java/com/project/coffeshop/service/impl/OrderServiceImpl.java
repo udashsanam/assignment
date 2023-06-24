@@ -5,6 +5,7 @@ import com.project.coffeshop.enums.OrderStatus;
 import com.project.coffeshop.enums.Role;
 import com.project.coffeshop.exception.UnAuthorizeException;
 import com.project.coffeshop.pojo.request.OrderPojo;
+import com.project.coffeshop.pojo.response.OrderDetailDto;
 import com.project.coffeshop.pojo.response.OrderDto;
 import com.project.coffeshop.repo.*;
 import com.project.coffeshop.service.OrderService;
@@ -39,9 +40,8 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderEntity, Long> impleme
 
     @Autowired
     private UserRoleRepository userRoleRepository;
-
-
-
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
 
 
     public OrderServiceImpl(OrderRepository orderRepository, UserTokenService userTokenService) {
@@ -56,30 +56,39 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderEntity, Long> impleme
         CafeEntity cafeEntity = cafeRepository.findById(orderPojo.getCafeId()).orElseThrow(()-> new RuntimeException("Cafe not found"));
         Map<Long, Integer> coffeeQuantity = orderPojo.getCoffeeQuantityMap();
         Map<Long, String> coffeeInstruction = orderPojo.getCoffeeInstruction();
-        double orderTotal = 0.0;
+        Double orderTotal = 0.0;
 
         OrderEntity order = new OrderEntity();
+        order.setUser(user);
+        order.setStatus(OrderStatus.PENDING);
         List<OrderDetailEntity>  orderDetailEntities = new ArrayList<>();
         order.setCafe(cafeEntity);
+
+        try {
+            orderDetailRepository.saveAll(orderDetailEntities);
+            order =save(order);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException("error placing order");
+        }
 
         for (Map.Entry<Long, Integer> coffeeOrder:
              coffeeQuantity.entrySet()) {
             CoffeeEntity coffee = coffeeRepository.findById(coffeeOrder.getKey()).orElseThrow(()-> new RuntimeException("Coffee not found"));
-            orderTotal =+ coffeeOrder.getValue() * coffee.getPrice();
+            orderTotal += coffeeOrder.getValue() * coffee.getPrice();
             OrderDetailEntity orderDetailEntity = OrderDetailEntity.builder()
                     .quantity(coffeeOrder.getValue())
                     .coffee(coffee)
                     .description(coffeeInstruction.get(coffeeOrder.getKey()))
+                    .order(order)
                     .build();
             orderDetailEntities.add(orderDetailEntity);
 
         }
         order.setOrderTotal(orderTotal);
-        order.setStatus(OrderStatus.PENDING);
-        order.setOrderDetailEntities(orderDetailEntities);
-        order.setUser(user);
 
         try {
+            orderDetailRepository.saveAll(orderDetailEntities);
             order =save(order);
         }catch (Exception e){
             e.printStackTrace();
@@ -114,14 +123,15 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderEntity, Long> impleme
             OrderDto orderDto = new OrderDto();
             orderDto.setOrderTotal(orderEntity.getOrderTotal());
             orderDto.setOrderStatus(orderEntity.getStatus());
-            HashMap<Long, String> coffeeNameMap = new HashMap<>();
-            HashMap<Long, Integer> coffeeQuantity = new HashMap<>();
+            List<OrderDetailDto> orderDetailDtoList = new ArrayList<>();
             orderEntity.getOrderDetailEntities().forEach(orderDetailEntity -> {
-                coffeeNameMap.put(orderDetailEntity.getCoffee().getId(), orderDetailEntity.getCoffee().getName());
-                coffeeQuantity.put(orderDetailEntity.getCoffee().getId(), orderDetailEntity.getQuantity());
+                orderDetailDtoList.add(OrderDetailDto.builder()
+                                .coffeeId(orderDetailEntity.getCoffee().getId())
+                                .coffeeName(orderDetailEntity.getCoffee().getName())
+                                .quantity(orderDetailEntity.getQuantity())
+                                .build());
             });
-            orderDto.setCoffeeName(coffeeNameMap);
-            orderDto.setCoffeeQuantity(coffeeQuantity);
+            orderDto.setOrderDetailDtoList(orderDetailDtoList);
             if(isOwner){
                 orderDto.setCustomerName(orderEntity.getUser().getName());
                 orderDto.setUserId(orderEntity.getUser().getId());

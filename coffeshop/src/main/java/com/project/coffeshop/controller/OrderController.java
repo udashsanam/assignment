@@ -29,8 +29,11 @@ public class OrderController extends BaseController{
     }
 
     @GetMapping("get-all-orders-coffee-shop")
-    public ResponseEntity<?> getAllOrdersRestaurant(@RequestParam("restaurantId") Long restaurantId, HttpServletRequest request){
+    public ResponseEntity<?> getAllOrdersRestaurant(@RequestParam("cafeId") Long cafeId, HttpServletRequest request){
         String token = getAccessToken(request);
-        return ResponseEntity.ok(successResponse("Successfully fetched", orderService.getAllOrderCafe(restaurantId, token)));
+        return ResponseEntity.ok(successResponse("Successfully fetched", orderService.getAllOrderCafe(cafeId, token)));
     }
+
+
+
 }

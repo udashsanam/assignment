@@ -23,7 +23,7 @@ public class OrderEntity extends BaseEntity{
     @Column(name = "order_total")
     private Double orderTotal;
 
-    @OneToMany(mappedBy = "order",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order",fetch = FetchType.EAGER)
     private List<OrderDetailEntity> orderDetailEntities;
 
     @ManyToOne(fetch = FetchType.EAGER)
