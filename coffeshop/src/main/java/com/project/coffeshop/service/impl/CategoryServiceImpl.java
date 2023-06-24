@@ -8,6 +8,9 @@ import com.project.coffeshop.service.CategoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 public class CategoryServiceImpl extends BaseServiceImpl<CategoryEntity, Long> implements CategoryService {
@@ -23,6 +26,25 @@ public class CategoryServiceImpl extends BaseServiceImpl<CategoryEntity, Long> i
 
     @Override
     public CategoryDto saveCategory(CategoryPojo categoryPojo) {
-        return null;
+
+        CategoryEntity categoryEntity = new CategoryEntity();
+        categoryEntity.setName(categoryPojo.getName());
+
+        try {
+            categoryEntity = save(categoryEntity);
+        }catch (Exception ex){
+            ex.printStackTrace();
+            throw new RuntimeException("Error saving category");
+        }
+
+        return new CategoryDto(categoryEntity.getId(), categoryEntity.getName());
+    }
+
+    @Override
+    public List<CategoryDto> findAllCategory() {
+        List<CategoryEntity> categoryEntities = categoryRepository.findAll();
+        return categoryEntities.parallelStream()
+                .map(categoryEntity -> new CategoryDto(categoryEntity.getId(), categoryEntity.getName()))
+                .collect(Collectors.toList());
     }
 }

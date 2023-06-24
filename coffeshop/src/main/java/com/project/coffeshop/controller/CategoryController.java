@@ -6,10 +6,7 @@ import com.project.coffeshop.pojo.request.CategoryPojo;
 import com.project.coffeshop.service.CafeService;
 import com.project.coffeshop.service.CategoryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/category")
@@ -20,5 +17,10 @@ public class CategoryController extends BaseController {
     @PostMapping("save")
     public ResponseEntity<?> save(@RequestBody CategoryPojo categoryPojo){
         return ResponseEntity.ok(successResponse("successfully saved", categoryService.saveCategory(categoryPojo)));
+    }
+
+    @GetMapping("get-all")
+    public ResponseEntity<?> getAll(){
+        return ResponseEntity.ok(successResponse("Successfully fetched", categoryService.findAllCategory()));
     }
 }
