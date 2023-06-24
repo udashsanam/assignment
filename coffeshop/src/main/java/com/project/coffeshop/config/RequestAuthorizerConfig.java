@@ -18,7 +18,8 @@ public class RequestAuthorizerConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(requestInterceptor)
                 .excludePathPatterns("/api/user/sign-up")
-                .excludePathPatterns("/api/user/sign-in");
+                .excludePathPatterns("/api/user/sign-in")
+                .excludePathPatterns("/api/user/refresh");
 
     }
 }
