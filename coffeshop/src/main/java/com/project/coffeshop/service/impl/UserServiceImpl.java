@@ -54,6 +54,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity, Long> implement
 
     @Override
     public UserDto signUp(UserPojo userPojo) {
+        UserEntity userEntity = userRepository.findByUsername(userPojo.getUsername());
+        if(userEntity!=null) throw new RuntimeException("Username already present");
         Role roleEnum = Role.valueOf(userPojo.getRole());
         RoleEntity role = roleRepository.findByName(roleEnum);
         if(role ==null) throw new RuntimeException("role not found");

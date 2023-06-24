@@ -29,8 +29,8 @@ import static com.project.coffeshop.util.Constants.*;
 public class UserTokenServiceImpl extends BaseServiceImpl<UserTokenEntity, UUID> implements UserTokenService {
 
 
-
-    private final UserTokenRepository userTokenRepository;
+    @Autowired
+    private  UserTokenRepository userTokenRepository;
 
 
     @Autowired
@@ -54,6 +54,12 @@ public class UserTokenServiceImpl extends BaseServiceImpl<UserTokenEntity, UUID>
         UserEntity user = userRepository.findByUsername(onlineUser);
         if(user == null) throw new RuntimeException("user not found");
         return user;
+    }
+
+    @Override
+    public boolean isTokenExpired(String token) {
+        UserTokenEntity userTokenEntity = userTokenRepository.findByAccessToken(token);
+        return userTokenEntity.getExpiryTime().before(new Timestamp(System.currentTimeMillis()));
     }
 
     @Override

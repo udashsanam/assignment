@@ -14,4 +14,6 @@ public interface UserTokenService extends BaseService<UserTokenEntity, UUID> {
     Claims getClaims(String token);
 
     UserEntity getUser(String token);
+
+    boolean isTokenExpired(String token);
 }
