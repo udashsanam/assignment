@@ -67,7 +67,6 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderEntity, Long> impleme
         order.setCafe(cafeEntity);
 
         try {
-            orderDetailRepository.saveAll(orderDetailEntities);
             order =save(order);
         }catch (Exception e){
             e.printStackTrace();
@@ -114,6 +113,7 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderEntity, Long> impleme
         UserEntity userEntity = userTokenService.getUser(token);
         List<String> roles = userRoleRepository.findAllRolesByUserId(userEntity.getId());
         if(!roles.contains(Role.CAFE_OWNER.toString())) throw new UnAuthorizeException("you are unauthorized to view orders");
+        if(!restaurantId.equals(userEntity.getCafe().getId())) throw new RuntimeException("Not allowed to view");
         List<OrderEntity> orderEntities = orderRepository.findAllByCafeId(userEntity.getCafe().getId());
 
         return getOrderDtos(orderEntities, true);
