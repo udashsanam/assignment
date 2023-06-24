@@ -1,6 +1,7 @@
 package com.project.coffeshop.controller;
 
 import com.project.coffeshop.pojo.request.OrderPojo;
+import com.project.coffeshop.pojo.request.UpdateOrderPojo;
 import com.project.coffeshop.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,12 @@ public class OrderController extends BaseController{
     public ResponseEntity<?> getAllOrdersRestaurant(@RequestParam("cafeId") Long cafeId, HttpServletRequest request){
         String token = getAccessToken(request);
         return ResponseEntity.ok(successResponse("Successfully fetched", orderService.getAllOrderCafe(cafeId, token)));
+    }
+
+    @PutMapping("update-order")
+    public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderPojo orderPojo, HttpServletRequest request){
+        String token = getAccessToken(request);
+        return ResponseEntity.ok(successResponse("update successfully", orderService.updateOrder(orderPojo, token)));
     }
 
 
