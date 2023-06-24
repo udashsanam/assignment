@@ -1,9 +1,6 @@
 package com.project.coffeshop.service.impl;
 
-import com.project.coffeshop.entity.CafeEntity;
-import com.project.coffeshop.entity.RoleEntity;
-import com.project.coffeshop.entity.UserEntity;
-import com.project.coffeshop.entity.UserRoleEntity;
+import com.project.coffeshop.entity.*;
 import com.project.coffeshop.enums.Role;
 import com.project.coffeshop.pojo.request.LoginPojo;
 import com.project.coffeshop.pojo.request.UserPojo;
@@ -12,6 +9,8 @@ import com.project.coffeshop.pojo.response.UserDto;
 import com.project.coffeshop.repo.*;
 import com.project.coffeshop.service.UserTokenService;
 import com.project.coffeshop.util.Constants;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.sql.Timestamp;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -166,9 +167,31 @@ class UserServiceImplTest {
 
     @Test
     void signOut() {
+        String username = "test";
+        String accessToken = "token";
+        UserEntity user = new UserEntity();
+        user.setId(1l);
+
+        Claims claims = Jwts.claims();
+        claims.setSubject("test");
+
+        Mockito.when(userRepository.findByUsername("test")).thenReturn(user);
+        Mockito.when(userTokenService.getClaims("token")).thenReturn(claims);
+        UserTokenEntity userToken = new UserTokenEntity();
+        UUID uuid = UUID.randomUUID();
+        userToken.setId(uuid);
+        UserRefreshTokenEntity userRefreshTokenEntity = new UserRefreshTokenEntity();
+        Mockito.when(userTokenRepository.findByAccessToken("token")).thenReturn(userToken);
+        Mockito.when(userRefreshTokenRepo.findByUserTokenId(uuid)).thenReturn(userRefreshTokenEntity);
+        Mockito.when(userTokenRepository.save(any(UserTokenEntity.class))).thenReturn(null);
+        Mockito.when(userRefreshTokenRepo.save(any(UserRefreshTokenEntity.class))).thenReturn(null);
+
+        Boolean response =userService.signOut(username, accessToken);
+        assertTrue(response);
+
+
+
+
     }
 
-    @Test
-    void getToken() {
-    }
 }
