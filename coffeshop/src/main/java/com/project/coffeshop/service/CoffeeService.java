@@ -12,5 +12,5 @@ public interface CoffeeService extends BaseService<CoffeeEntity, Long> {
 
     List<CoffeeDto> getAllCoffee(Long cafeId);
 
-    CoffeeDto saveCoffee(CoffeePojo coffeePojo);
+    CoffeeDto saveCoffee(CoffeePojo coffeePojo,String token);
 }

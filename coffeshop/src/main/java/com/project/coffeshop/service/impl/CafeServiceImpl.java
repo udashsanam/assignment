@@ -10,6 +10,8 @@ import com.project.coffeshop.repo.CafeRepository;
 import com.project.coffeshop.repo.UserRepository;
 import com.project.coffeshop.repo.UserRoleRepository;
 import com.project.coffeshop.service.CafeService;
+import com.project.coffeshop.service.UserTokenService;
+import com.project.coffeshop.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,16 +32,21 @@ public class CafeServiceImpl extends BaseServiceImpl<CafeEntity, Long> implement
     @Autowired
     private UserRoleRepository  userRoleRepository;
 
-    public CafeServiceImpl(CafeRepository cafeRepository) {
+    private final UserTokenService  userTokenService;
+
+    public CafeServiceImpl(CafeRepository cafeRepository, UserTokenService userTokenService) {
         super(cafeRepository);
         this.cafeRepository = cafeRepository;
+        this.userTokenService = userTokenService;
     }
 
     @Override
-    public CafeDto saveCafe(CafePojo cafePojo) {
+    public CafeDto saveCafe(CafePojo cafePojo, String token) {
 
         // cafe are can only be crated by super admin
         UserEntity user = userRepository.findByUsername(cafePojo.getUsername());
+        String role = userTokenService.getClaims(token).get(Constants.USER_ROLES_CLAIM).toString();
+        if(!role.contains(Role.SUPER_ADMIN.toString())) throw new UnAuthorizeException("You are not allowed to create cafe");
         if(user ==null) throw  new RuntimeException("User not fund");
         List<String> roles = userRoleRepository.findAllRolesByUserId(user.getId());
         if(!roles.contains(Role.SUPER_ADMIN.toString())) throw new UnAuthorizeException(" You are not allowed to crate cafe");

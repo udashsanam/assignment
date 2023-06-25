@@ -3,13 +3,17 @@ package com.project.coffeshop.service.impl;
 import com.project.coffeshop.entity.CafeEntity;
 import com.project.coffeshop.entity.CategoryEntity;
 import com.project.coffeshop.entity.CoffeeEntity;
+import com.project.coffeshop.entity.UserEntity;
+import com.project.coffeshop.enums.Role;
+import com.project.coffeshop.exception.UnAuthorizeException;
 import com.project.coffeshop.pojo.request.CoffeePojo;
-import com.project.coffeshop.pojo.response.CafeDto;
 import com.project.coffeshop.pojo.response.CoffeeDto;
 import com.project.coffeshop.repo.CafeRepository;
 import com.project.coffeshop.repo.CategoryRepository;
 import com.project.coffeshop.repo.CoffeeRepository;
 import com.project.coffeshop.service.CoffeeService;
+import com.project.coffeshop.service.UserTokenService;
+import com.project.coffeshop.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +34,13 @@ public class CoffeeServiceImpl extends BaseServiceImpl<CoffeeEntity, Long> imple
     @Autowired
     private CategoryRepository categoryRepository;
 
+    private final UserTokenService userTokenService;
 
-    public CoffeeServiceImpl(CoffeeRepository coffeeRepository) {
+
+    public CoffeeServiceImpl(CoffeeRepository coffeeRepository, UserTokenService userTokenService) {
         super(coffeeRepository);
         this.coffeeRepository = coffeeRepository;
+        this.userTokenService = userTokenService;
     }
 
     @Override
@@ -52,8 +59,12 @@ public class CoffeeServiceImpl extends BaseServiceImpl<CoffeeEntity, Long> imple
     }
 
     @Override
-    public CoffeeDto saveCoffee(CoffeePojo coffeePojo) {
+    public CoffeeDto saveCoffee(CoffeePojo coffeePojo, String token) {
+        String role = userTokenService.getClaims(token).get(Constants.USER_ROLES_CLAIM).toString();
+        UserEntity user = userTokenService.getUser(token);
+        if(role.contains(Role.CAFE_OWNER.toString())) throw new  UnAuthorizeException("your are not authorize to add coffee");
         CafeEntity cafe  = cafeRepository.findById(coffeePojo.getCafeId()).orElseThrow(()-> new RuntimeException("Cafe not found"));
+        if(!cafe.getId().equals(user.getCafe().getId())) throw new UnAuthorizeException("Your are not allowed to add coffee");
         CategoryEntity categoryEntity = categoryRepository.findById(coffeePojo.getCategoryId()).orElseThrow(()-> new RuntimeException("Category not found"));
         CoffeeEntity coffee = CoffeeEntity.builder()
                 .name(coffeePojo.getName())
