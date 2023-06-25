@@ -2,6 +2,7 @@ package com.project.coffeshop.service.impl;
 
 import com.project.coffeshop.entity.*;
 import com.project.coffeshop.enums.OrderStatus;
+import com.project.coffeshop.enums.Role;
 import com.project.coffeshop.pojo.request.OrderPojo;
 import com.project.coffeshop.pojo.response.OrderDetailDto;
 import com.project.coffeshop.pojo.response.OrderDto;
@@ -14,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -168,7 +166,86 @@ class OrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("testing get all order by cafe owner")
     void getAllOrderCafe() {
+
+
+        String token = "test";
+        Long cafeId= 1l;
+        UserEntity cafeOwner = new UserEntity();
+        cafeOwner.setId(1l);
+
+        CafeEntity cafeEntity = new CafeEntity();
+        cafeEntity.setId(1l);
+        cafeOwner.setCafe(cafeEntity);
+
+        List<OrderEntity> orderEntities = new ArrayList<>();
+
+        OrderEntity order1 = new OrderEntity();
+        order1.setOrderTotal(2.0d);
+        order1.setStatus(OrderStatus.PENDING);
+        UserEntity cutomer1 = new UserEntity();
+        cutomer1.setId(2l);
+        cutomer1.setName("customer 1");
+        order1.setUser(cutomer1);
+
+        List<OrderDetailEntity> orderDetailEntities1 = new ArrayList<>();
+        OrderDetailEntity orderDetailEntity11 = new OrderDetailEntity();
+        orderDetailEntity11.setQuantity(1);
+        CoffeeEntity coffee1 = new CoffeeEntity();
+        coffee1.setName("coffee1");
+        coffee1.setId(1l);
+        orderDetailEntity11.setCoffee(coffee1);
+        orderDetailEntities1.add(orderDetailEntity11);
+
+        OrderDetailEntity orderDetailEntity2 = new OrderDetailEntity();
+        orderDetailEntity2.setQuantity(1);
+        CoffeeEntity  coffee2 = new CoffeeEntity();
+        coffee2.setId(2l);
+        coffee2.setName("coffee2");
+        orderDetailEntity2.setCoffee(coffee2);
+        orderDetailEntities1.add(orderDetailEntity2);
+        order1.setOrderDetailEntities(orderDetailEntities1);
+
+        orderEntities.add(order1);
+
+        OrderEntity orderEntity2 = new OrderEntity();
+        orderEntity2.setOrderTotal(1.0d);
+
+        UserEntity customer2 = new UserEntity();
+        customer2.setId(2l);
+        customer2.setName("customer 2");
+        orderEntity2.setUser(customer2);
+
+        List<OrderDetailEntity> orderDetailEntities2 =new ArrayList<>();
+        OrderDetailEntity orderDetailEntity21 = new OrderDetailEntity();
+        orderDetailEntity21.setQuantity(1);
+        orderDetailEntity21.setCoffee(coffee1);
+        orderDetailEntities2.add(orderDetailEntity21);
+
+        orderEntity2.setOrderDetailEntities(orderDetailEntities2);
+        orderEntities.add(orderEntity2);
+
+
+        Mockito.when(userTokenService.getUser(token)).thenReturn(cafeOwner);
+
+        List<String> roles = Arrays.asList(Role.CAFE_OWNER.toString());
+        Mockito.when(userRoleRepository.findAllRolesByUserId(1l)).thenReturn(roles);
+
+        Mockito.when(orderRepository.findAllByCafeId(1l)).thenReturn(orderEntities);
+
+        List<OrderDto> orderDtos = orderService.getAllOrderCafe(cafeId, token);
+
+        assertEquals(2, orderDtos.size());
+        List<OrderDetailDto> orderDetailDtoList = orderDtos.get(0).getOrderDetailDtoList();
+        List<OrderDetailDto> orderDetailDtoList1 = orderDtos.get(1).getOrderDetailDtoList();
+
+        assertEquals("customer 1", orderDtos.get(0).getCustomerName());
+        assertEquals("customer 2", orderDtos.get(1).getCustomerName());
+
+
+        assertEquals(2, orderDetailDtoList.size());
+        assertEquals(1, orderDetailDtoList1.size());
     }
 
     @Test
