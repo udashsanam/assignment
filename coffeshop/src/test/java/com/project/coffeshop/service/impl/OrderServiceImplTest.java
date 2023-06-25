@@ -4,10 +4,13 @@ import com.project.coffeshop.entity.*;
 import com.project.coffeshop.enums.OrderStatus;
 import com.project.coffeshop.enums.Role;
 import com.project.coffeshop.pojo.request.OrderPojo;
+import com.project.coffeshop.pojo.request.UpdateOrderPojo;
 import com.project.coffeshop.pojo.response.OrderDetailDto;
 import com.project.coffeshop.pojo.response.OrderDto;
 import com.project.coffeshop.repo.*;
 import com.project.coffeshop.service.UserTokenService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,6 +20,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.*;
 
+import static com.project.coffeshop.util.Constants.USER_ID_CLAIM;
+import static com.project.coffeshop.util.Constants.USER_ROLES_CLAIM;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -249,6 +254,38 @@ class OrderServiceImplTest {
     }
 
     @Test
+    @DisplayName("update order status ")
     void updateOrder() {
+        UpdateOrderPojo orderPojo = new UpdateOrderPojo();
+        orderPojo.setOrderId(1l);
+        orderPojo.setOrderStatus("PROCESSING");
+        String token = "token";
+        UserEntity cafeOwner =new UserEntity();
+        CafeEntity cafe = new CafeEntity();
+        cafe.setId(1l);
+        cafeOwner.setCafe(cafe);
+
+        Mockito.when(userTokenService.getUser("token")).thenReturn(cafeOwner);
+
+        Claims tokenClaims = Jwts.claims();
+        tokenClaims.put(USER_ROLES_CLAIM, Role.CAFE_OWNER.toString());
+
+        Mockito.when(userTokenService.getClaims("token")).thenReturn(tokenClaims);
+
+        OrderEntity order =new OrderEntity();
+        order.setId(1l);
+        order.setCafe(cafe);
+
+        Mockito.when(orderRepository.findById(1l)).thenReturn(Optional.of(order));
+
+        Mockito.when(orderRepository.save(order)).thenReturn(order);
+
+        OrderDto orderDto = orderService.updateOrder(orderPojo, token);
+
+        assertEquals(1l, orderDto.getOrderId());
+        assertEquals(OrderStatus.PROCESSING, orderDto.getOrderStatus());
+
+
+
     }
 }
